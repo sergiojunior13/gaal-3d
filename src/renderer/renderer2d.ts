@@ -1,4 +1,4 @@
-import type { Object2D, DrawProps } from "../interfaces/object";
+import type { Object2D } from "../interfaces/object";
 
 export class Renderer2D {
     ctx: CanvasRenderingContext2D;
