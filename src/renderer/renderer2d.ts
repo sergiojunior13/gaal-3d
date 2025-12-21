@@ -63,16 +63,29 @@ export class Renderer2D {
         this.ctx.restore();
     }
 
-    public changeOrigin(newX: number, newY: number) {
-        this.ctx.translate(newX, -newY);
-        this.offset.x += newX;
-        this.offset.y -= newY;
+    public changeZoom(newZoom: number) {
+        this.zoom = newZoom;
 
         this.render();
     }
 
-    public changeZoom(newZoom: number) {
-        this.zoom = newZoom;
+    private setCenterOrigin() {
+        this.ctx.translate(this.canvas.width / 2, this.canvas.height / 2);
+        this.ctx.scale(1, -1); // Faz o y crescer para cima
+    }
+
+    public changeOrigin(newX: number, newY: number) {
+        // Resetar todas as transformações
+        this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+
+        // Move a origem para o centro da tela
+        this.setCenterOrigin();
+
+        // Move a origem de fato
+        this.ctx.translate(newX, newY);
+
+        this.offset.x = newX;
+        this.offset.y = newY;
 
         this.render();
     }
@@ -86,7 +99,6 @@ export class Renderer2D {
 
         // Mudar a origem das coordenadas do canvas para o centro da tela
         this.ctx.save();
-        this.ctx.translate(width / 2, height / 2);
-        this.ctx.scale(1, -1); // Faz o y crescer para cima
+        this.setCenterOrigin();
     }
 }
