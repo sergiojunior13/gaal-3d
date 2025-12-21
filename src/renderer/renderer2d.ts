@@ -23,7 +23,11 @@ export class Renderer2D {
         if (!this.ctx) throw new Error("Erro no contexto do canvas");
 
         this.setCanvasDimensions();
-        window.onresize = this.setCanvasDimensions;
+
+        window.onresize = () => {
+            this.setCanvasDimensions();
+            this.render();
+        };
     }
 
     public add(...objects: Object2D[]) {
@@ -70,14 +74,17 @@ export class Renderer2D {
     }
 
     private setCenterOrigin() {
-        this.ctx.translate(this.canvas.width / 2, this.canvas.height / 2);
-        this.ctx.scale(1, -1); // Faz o y crescer para cima
-    }
-
-    public changeOrigin(newX: number, newY: number) {
         // Resetar todas as transformações
         this.ctx.setTransform(1, 0, 0, 1, 0, 0);
 
+        // Move a origem para o centro da tela
+        this.ctx.translate(this.canvas.width / 2, this.canvas.height / 2);
+
+        // Faz o y crescer para cima
+        this.ctx.scale(1, -1);
+    }
+
+    public changeOrigin(newX: number, newY: number) {
         // Move a origem para o centro da tela
         this.setCenterOrigin();
 
