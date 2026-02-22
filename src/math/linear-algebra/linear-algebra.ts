@@ -1,7 +1,8 @@
 import type { Point2D } from "../../objects/points/point2d";
 import { Vector2D } from "../../objects/vectors/vector2d";
+import type { Matrix } from "../types/matrices";
 
-type Coords = Vector2D | Point2D | { x: number; y: number };
+export type Coords = Vector2D | Point2D | { x: number; y: number };
 
 export class LAlgebra {
     static sum(vec1: Coords, vec2: Coords) {
@@ -31,7 +32,7 @@ export class LAlgebra {
         return Math.sqrt(vec.x ** 2 + vec.y ** 2);
     }
 
-    static multiply(A: number[][], B: number[][]): number[][] | null {
+    static multiply(A: Matrix, B: Matrix): Matrix | null {
         const nRows1 = A.length;
         const nCols1 = A[0].length;
 
