@@ -1,10 +1,6 @@
 import type { DrawProps } from "../../interfaces/object";
-import { LAlgebra } from "../../math/linear-algebra/linear-algebra";
-
-type Coords = {
-    x: number;
-    y: number;
-};
+import { LAlgebra, type Coords } from "../../math/linear-algebra/linear-algebra";
+import { Matrix } from "../../math/matrix";
 
 export class Vector2D implements Object {
     x = 0;
@@ -16,10 +12,7 @@ export class Vector2D implements Object {
 
     triangleSize = 0.5;
 
-    constructor(
-        { p1: point1, p2: point2 }: { p1: Coords; p2?: Coords },
-        options?: { color?: string }
-    ) {
+    constructor({ p1: point1, p2: point2 }: { p1: Coords; p2?: Coords }, options?: { color?: string }) {
         if (point2) {
             this.x = point2.x - point1.x;
             this.y = point2.y - point1.y;
@@ -42,21 +35,17 @@ export class Vector2D implements Object {
         const scale = zoom * unit;
 
         // Encurtar a reta para que fique imediatamente antes do começo do triângulo da seta
-        const shrinkFactor =
-            1 - this.triangleSize / LAlgebra.norm({ x: this.x, y: this.y });
+        const shrink_factor = 1 - this.triangleSize / LAlgebra.norm({ x: this.x, y: this.y });
 
         ctx.beginPath();
 
         ctx.strokeStyle = this.color;
         ctx.lineWidth = 0.05 * scale;
         ctx.moveTo(this.start.x * scale, this.start.y * scale);
-        ctx.lineTo(
-            (this.start.x + this.x * shrinkFactor) * scale,
-            (this.start.y + this.y * shrinkFactor) * scale
-        );
+        ctx.lineTo((this.start.x + this.x * shrink_factor) * scale, (this.start.y + this.y * shrink_factor) * scale);
         ctx.stroke();
 
-        // Draw triangle of the vector
+        // Desenhar o triângulo na ponto do vetor
         const points = this.getTriangleCoords();
         if (!points) return;
 
@@ -92,21 +81,21 @@ export class Vector2D implements Object {
         let PP2 = LAlgebra.subtract(P2, P);
         let PP3 = LAlgebra.subtract(P3, P);
 
-        // Rotate these vectors/points by the angle
-        const rotationMatrix = [
+        // Rotacionar os vetores/pontos pelo ângulo
+        const rotation_matrix = new Matrix([
             [Math.cos(angle), -Math.sin(angle)],
             [Math.sin(angle), Math.cos(angle)],
-        ];
+        ]);
 
-        const multP2 = LAlgebra.multiply(rotationMatrix, [[PP2.x], [PP2.y]]);
-        const multP3 = LAlgebra.multiply(rotationMatrix, [[PP3.x], [PP3.y]]);
+        const rotated_P2 = LAlgebra.multiply(rotation_matrix, new Matrix([[PP2.x], [PP2.y]]));
+        const rotated_P3 = LAlgebra.multiply(rotation_matrix, new Matrix([[PP3.x], [PP3.y]]));
 
-        if (!multP2 || !multP3) return null;
+        if (!rotated_P2 || !rotated_P3) return null;
 
-        PP2 = { x: multP2[0][0], y: multP2[1][0] };
-        PP3 = { x: multP3[0][0], y: multP3[1][0] };
+        PP2 = { x: rotated_P2.values[0][0], y: rotated_P2.values[1][0] };
+        PP3 = { x: rotated_P3.values[0][0], y: rotated_P3.values[1][0] };
 
-        // Sum these vectors/points with P again to get the exact coords
+        // Somar os vetores/pontos com P novamente para obter as coordenadas absolutas
         P2 = LAlgebra.sum(PP2, P);
         P3 = LAlgebra.sum(PP3, P);
 
