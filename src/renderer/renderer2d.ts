@@ -1,4 +1,4 @@
-import type { Object2D } from "../interfaces/object";
+import type { DrawProps, Object2D } from "../interfaces/object";
 
 export class Renderer2D {
     ctx: CanvasRenderingContext2D;
@@ -107,5 +107,13 @@ export class Renderer2D {
         // Mudar a origem das coordenadas do canvas para o centro da tela
         this.ctx.save();
         this.setCenterOrigin();
+    }
+
+    static mapValueToPixel(value: number, { unit, zoom }: DrawProps) {
+        return value * unit * zoom;
+    }
+
+    static mapPixelToValue(pixel: number, { unit, zoom }: DrawProps) {
+        return pixel / unit / zoom;
     }
 }
